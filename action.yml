@@ -49,21 +49,31 @@ runs:
         sizes = {}
 
         def collect_sizes(dir):
+          # this_dir_size = 0
+          # for i in os.listdir(dir):
+          #   ipth = os.path.join(dir, i)
+          #   if os.path.isfile(ipth):
+          #     sizes[ipth] = os.path.getsize(ipth)
+          #     this_dir_size += os.path.getsize(ipth)
+          #   else: collect_sizes(ipth)
+          # sizes[dir] = this_dir_size
+          ## vvvvv bug fixed: forgot to bring the inner dir size to the outer (recursively)
           this_dir_size = 0
           for i in os.listdir(dir):
             ipth = os.path.join(dir, i)
             if os.path.isfile(ipth):
               sizes[ipth] = os.path.getsize(ipth)
               this_dir_size += os.path.getsize(ipth)
-            else: collect_sizes(ipth)
+            else: this_dir_size += collect_sizes(ipth)
           sizes[dir] = this_dir_size
+          return this_dir_size  # pass this dir size into the outer (if any)
         collect_sizes(DIR)
         
         def run(dir, level=0):  # `level` start from 0; level=0 is the root
-          print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + f"  ({sizes[dir]} / {fmt_byte(sizes[dir])})")
+          print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + f" {sizes[dir]}|{fmt_byte(sizes[dir])}")
           for i in os.listdir(dir):
             ipth = os.path.join(dir, i)
-            if os.path.isfile(ipth): print('    '*level + f'└── {i}' + f"  ({sizes[ipth]} / {fmt_byte(sizes[ipth])})")
+            if os.path.isfile(ipth): print('    '*level + f'└── {i}' + f" {sizes[ipth]}|{fmt_byte(sizes[ipth])}")
             else: run(ipth, level+1)
         run(DIR)
       shell: python
