@@ -70,11 +70,11 @@ runs:
         collect_sizes(DIR)
 
         def format_it(size):
-          return f" ────────────────────────────── {size}|{fmt_byte(size)}"
+          return f" ───────────────────────────────────── {size}|{fmt_byte(size)}"
         
         def run(dir, level=0):  # `level` start from 0; level=0 is the root
           print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
-          for i in os.listdir(dir):
+          for i in sorted(os.listdir(dir)):
             ipth = os.path.join(dir, i)
             if os.path.isfile(ipth): print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
             else: run(ipth, level+1)
