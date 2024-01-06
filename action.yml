@@ -57,6 +57,7 @@ runs:
               this_dir_size += os.path.getsize(ipth)
             else: collect_sizes(ipth)
           sizes[dir] = this_dir_size
+        collect_sizes(DIR)
         
         def run(dir, level=0):  # `level` start from 0; level=0 is the root
           print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + f"  ({sizes[dir]} / {fmt_byte(sizes[dir])})")
