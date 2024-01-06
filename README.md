@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       ...
-      - uses: nvfp/ghact-dirtree@latest
+      - uses: nvfp/ghact-dirtree@main
         with:
           dir: ./foo
 ```
