@@ -8,8 +8,63 @@ runs:
   steps:      
     - run: |
         import os
+
+        import math, re  # borrowed from  https://github.com/nvfp/mykit/blob/main/mykit/standalone/fmt_byte/__init__.py  @ jan 6, 2024
+        def _connum(num):
+            res = re.match(r'^(?P<sign>\+|-)?[0]*(?P<int>\d+)(?:(?P<dec>\.\d*?)[0]*)?$', str(num))
+            if res is None:
+                raise ValueError(f'Invalid numeric input: {repr(num)}.')
+            sign, int, dec = res.groups()
+            if sign in (None, '+'):
+                out = ''
+            else:
+                if (int == '0') and (dec in (None, '.')):
+                    out = ''
+                else:
+                    out = '-'
+            out += int
+            if dec not in (None, '.'):
+                out += dec
+            return out
+        def fmt_byte(bytes:int, /, precision:int=2, gap:int=1) -> str:
+            GAP = ' '*gap
+            if bytes == 0: return '0' + GAP + 'B'
+            bytes = round(bytes)
+            sign = ''
+            if bytes < 0:
+                bytes = abs(bytes)
+                sign = '-'
+            power = math.floor( math.log(bytes, 1024) )
+            number = round( bytes / math.pow(1024, power), precision )
+            UNIT = [
+                'B', 'KiB', 'MiB',
+                'GiB', 'TiB', 'PiB',
+                'EiB', 'ZiB', 'YiB',
+            ]
+            return sign + _connum(number) + GAP + UNIT[power]
+
         DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
         print(DIR)
+
+        sizes = {}
+
+        def collect_sizes(dir):
+          this_dir_size = 0
+          for i in os.listdir(dir):
+            ipth = os.path.join(dir, i)
+            if os.path.isfile(ipth):
+              sizes[ipth] = os.path.getsize(ipth)
+              this_dir_size += os.path.getsize(ipth)
+            else: collect_sizes(ipth)
+          sizes[dir] = this_dir_size
+        
+        def run(dir, level=0):  # `level` start from 0; level=0 is the root
+          print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + f"  ({sizes[dir]} / {fmt_byte(sizes[dir])})")
+          for i in os.listdir(dir):
+            ipth = os.path.join(dir, i)
+            if os.path.isfile(ipth): print('    '*level + f'└── {i}' + f"  ({sizes[ipth]} / {fmt_byte(sizes[ipth])})")
+            else: run(ipth, level+1)
+        run(DIR)
       shell: python
       env:
         IPT_DIR: ${{ inputs.dir }}
