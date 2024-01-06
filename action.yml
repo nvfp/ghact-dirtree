@@ -1,0 +1,16 @@
+inputs:
+  dir:
+    description: folder path (relative to root)
+    required: true
+
+runs:
+  using: composite
+  steps:      
+    - run: |
+        import os
+        IPT_DIR = os.environ['IPT_DIR']
+        print(os.getcwd())
+        print(IPT_DIR)
+      shell: python
+      env:
+        IPT_DIR: ${{ inputs.dir }}
