@@ -98,20 +98,34 @@ runs:
         def format_it(size):
           return f" {'─'*37} {size}|{fmt_byte(size)}"
         
+        # def run(dir, level=0):  # `level` start from 0; level=0 is the root
+        #   if the_level is None: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
+        #   else:
+        #     if level > the_level: pass
+        #     else: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
+        #   for i in sorted(os.listdir(dir)):
+        #     ipth = os.path.join(dir, i)
+        #     if os.path.isfile(ipth):
+        #       # print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+        #       ## vvvvvv updated 2.0
+        #       if the_level is None: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+        #       else:
+        #         if level > the_level: pass
+        #         else: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+        #     else: run(ipth, level+1)
+        ## vvv refactor the printing mechanism and also fix the bug where level=0 not printing the files
+        def will_print(mylevel, text):
+            if the_level is None: print(text)
+            else:
+              if level > the_level: pass
+              else: print(text)
         def run(dir, level=0):  # `level` start from 0; level=0 is the root
-          if the_level is None: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
-          else:
-            if level > the_level: pass
-            else: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
+          # will_print(level, ('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
+          ## vvvvvvv need the `-1` so that the subdirs' size is printed for current level
+          will_print(level-1, ('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
           for i in sorted(os.listdir(dir)):
             ipth = os.path.join(dir, i)
-            if os.path.isfile(ipth):
-              # print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
-              ## vvvvvv updated 2.0
-              if the_level is None: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
-              else:
-                if level > the_level: pass
-                else: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+            if os.path.isfile(ipth): will_print(level, '    '*level + f'└── {i}' + format_it(sizes[ipth]))
             else: run(ipth, level+1)
         run(DIR)
       shell: python
