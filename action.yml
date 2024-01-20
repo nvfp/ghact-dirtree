@@ -48,25 +48,16 @@ runs:
             ]
             return sign + _connum(number) + GAP + UNIT[power]
 
-        # DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
-        ## vvvvvvv updated
         IPT__dir = os.environ['IPT__dir']
         if IPT__dir.startswith('.'):
-            # DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
-            ## vvvvv bugfixed
-            # DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(IPT__dir)))
-            ## vvvvv improved
             DIR = os.path.normpath(os.path.abspath( os.path.join(os.getcwd(), IPT__dir) ))
         else:
             if not os.path.isdir(IPT__dir): raise AssertionError(f"Not a dir: {repr(IPT__dir)}")
             DIR = IPT__dir
         print(f"INFO: repr(DIR): {repr(DIR)}")
 
-        ## level
         IPT__level = os.environ['IPT__level']
         if IPT__level == '':
-            # level = None
-            ## vvvv cant use the above because will clash with below var names
             the_level = None
         else:
             the_level = max(0, int(IPT__level))  # clamp too
@@ -75,15 +66,6 @@ runs:
         sizes = {}
 
         def collect_sizes(dir):
-          # this_dir_size = 0
-          # for i in os.listdir(dir):
-          #   ipth = os.path.join(dir, i)
-          #   if os.path.isfile(ipth):
-          #     sizes[ipth] = os.path.getsize(ipth)
-          #     this_dir_size += os.path.getsize(ipth)
-          #   else: collect_sizes(ipth)
-          # sizes[dir] = this_dir_size
-          ## vvvvv bug fixed: forgot to bring the inner dir size to the outer (recursively)
           this_dir_size = 0
           for i in os.listdir(dir):
             ipth = os.path.join(dir, i)
@@ -98,30 +80,13 @@ runs:
         def format_it(size):
           return f" {'─'*37} {size}|{fmt_byte(size)}"
         
-        # def run(dir, level=0):  # `level` start from 0; level=0 is the root
-        #   if the_level is None: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
-        #   else:
-        #     if level > the_level: pass
-        #     else: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
-        #   for i in sorted(os.listdir(dir)):
-        #     ipth = os.path.join(dir, i)
-        #     if os.path.isfile(ipth):
-        #       # print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
-        #       ## vvvvvv updated 2.0
-        #       if the_level is None: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
-        #       else:
-        #         if level > the_level: pass
-        #         else: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
-        #     else: run(ipth, level+1)
-        ## vvv refactor the printing mechanism and also fix the bug where level=0 not printing the files
         def will_print(mylevel, text):
             if the_level is None: print(text)
             else:
-              if level > the_level: pass
+              if mylevel > the_level: pass
               else: print(text)
+        
         def run(dir, level=0):  # `level` start from 0; level=0 is the root
-          # will_print(level, ('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
-          ## vvvvvvv need the `-1` so that the subdirs' size is printed for current level
           will_print(level-1, ('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
           for i in sorted(os.listdir(dir)):
             ipth = os.path.join(dir, i)
