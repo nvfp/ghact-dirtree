@@ -32,6 +32,14 @@ jobs:
         with:
           dir: ./../..
           level: 0
+  test_level0_at_root:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nvfp/ghact-dirtree@main
+        with:
+          dir: .
+          level: 0
   
   test_level_1:
     runs-on: ubuntu-latest
