@@ -7,16 +7,19 @@ jobs:
   run_default:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: nvfp/ghact-dirtree@main
   
   update_branch:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: nvfp/ghact-dirtree@up  # dont forget to update me, if the update-branch's name is different.
   
   test_dir:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: nvfp/ghact-dirtree@main
         with:
           dir: ./../..
@@ -24,6 +27,7 @@ jobs:
   test_level0:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: nvfp/ghact-dirtree@main
         with:
           dir: ./../..
@@ -32,6 +36,7 @@ jobs:
   test_level_1:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: nvfp/ghact-dirtree@main
         with:
           dir: ./../..
@@ -40,6 +45,7 @@ jobs:
   test_level_2:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: nvfp/ghact-dirtree@main
         with:
           dir: ./../..
