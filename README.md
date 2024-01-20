@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       ...
-      - uses: nvfp/ghact-dirtree@main
+      - uses: nvfp/ghact-dirtree@x.y.z  # EDITME (check the version at the release tab, the latest version is recommended)
         with:
-          dir: ./foo
+          dir: ./foo  # can be relative to root, and an abs. path.
+          level: 3  # starts from 0. `null` for infinite.
 ```
 
 Read parameters' description [here](https://github.com/nvfp/ghact-dirtree/blob/main/action.yml).

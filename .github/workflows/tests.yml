@@ -1,0 +1,46 @@
+name: Tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  run_default:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nvfp/ghact-dirtree@main
+  
+  update_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nvfp/ghact-dirtree@up  # dont forget to update me, if the update-branch's name is different.
+  
+  test_dir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nvfp/ghact-dirtree@main
+        with:
+          dir: ./../..
+  
+  test_level0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nvfp/ghact-dirtree@main
+        with:
+          dir: ./../..
+          level: 0
+  
+  test_level_1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nvfp/ghact-dirtree@main
+        with:
+          dir: ./../..
+          level: 1
+  
+  test_level_2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nvfp/ghact-dirtree@main
+        with:
+          dir: ./../..
+          level: 2

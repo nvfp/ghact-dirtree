@@ -1,7 +1,12 @@
 inputs:
   dir:
-    description: folder path (relative to root)
-    required: true
+    description: the folder path (can be relative to root (starts with '.'), or an absolute path)
+    required: false
+    default: "."  # for example: '.' means at the root. './foo' means the 'root/foo/' directory
+  level:
+    description: "Starts from 0. A value of 0 means to list only the ones inside the given `dir`. Don't specify to mean infinite (showing all)."
+    required: false
+    default: null
 
 runs:
   using: composite
@@ -43,8 +48,25 @@ runs:
             ]
             return sign + _connum(number) + GAP + UNIT[power]
 
-        DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
-        # print(DIR)  #debug
+        # DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
+        ## vvvvvvv updated
+        IPT__dir = os.environ['IPT__dir']
+        if IPT__dir.startswith('.'):
+            DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
+        else:
+            if not os.path.isdir(IPT__dir): raise AssertionError(f"Not a dir: {repr(IPT__dir)}")
+            DIR = IPT__dir
+        print(f"INFO: repr(DIR): {repr(DIR)}")
+
+        ## level
+        IPT__level = os.environ['IPT__level']
+        if IPT__level == '':
+            # level = None
+            ## vvvv cant use the above because will clash with below var names
+            the_level = None
+        else:
+            the_level = max(0, int(IPT__level))  # clamp too
+
 
         sizes = {}
 
@@ -70,15 +92,25 @@ runs:
         collect_sizes(DIR)
 
         def format_it(size):
-          return f" ───────────────────────────────────── {size}|{fmt_byte(size)}"
+          return f" {'─'*37} {size}|{fmt_byte(size)}"
         
         def run(dir, level=0):  # `level` start from 0; level=0 is the root
-          print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
+          if level is None: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
+          else:
+            if level > the_level: pass
+            else: print(('' if level==0 else '    '*(level-1)+'└── ') + os.path.basename(dir) + '/' + format_it(sizes[dir]))
           for i in sorted(os.listdir(dir)):
             ipth = os.path.join(dir, i)
-            if os.path.isfile(ipth): print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+            if os.path.isfile(ipth):
+              # print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+              ## vvvvvv updated 2.0
+              if level is None: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
+              else:
+                if level > the_level: pass
+                else: print('    '*level + f'└── {i}' + format_it(sizes[ipth]))
             else: run(ipth, level+1)
         run(DIR)
       shell: python
       env:
-        IPT_DIR: ${{ inputs.dir }}
+        IPT__dir: ${{ inputs.dir }}
+        IPT__level: ${{ inputs.dir }}
