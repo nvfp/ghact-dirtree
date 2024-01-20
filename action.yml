@@ -117,4 +117,4 @@ runs:
       shell: python
       env:
         IPT__dir: ${{ inputs.dir }}
-        IPT__level: ${{ inputs.dir }}
+        IPT__level: ${{ inputs.level }}
