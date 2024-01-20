@@ -52,7 +52,11 @@ runs:
         ## vvvvvvv updated
         IPT__dir = os.environ['IPT__dir']
         if IPT__dir.startswith('.'):
-            DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
+            # DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(os.environ['IPT_DIR'])))
+            ## vvvvv bugfixed
+            # DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.normpath(IPT__dir)))
+            ## vvvvv improved
+            DIR = os.path.normpath(os.path.abspath( os.path.join(os.getcwd(), IPT__dir) ))
         else:
             if not os.path.isdir(IPT__dir): raise AssertionError(f"Not a dir: {repr(IPT__dir)}")
             DIR = IPT__dir
