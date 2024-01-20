@@ -4,7 +4,7 @@ inputs:
     required: false
     default: "."  # for example: '.' means at the root. './foo' means the 'root/foo/' directory
   level:
-    description: "Starts from 0. A value of 0 means to list only the ones inside the given `dir`. Don't specify to mean infinite (showing all)."
+    description: starts from 0 (0 means only the ones inside the given `dir`). use `null` for recursive.
     required: false
     default: null
 
@@ -92,6 +92,8 @@ runs:
             ipth = os.path.join(dir, i)
             if os.path.isfile(ipth): will_print(level, '    '*level + f'└── {i}' + format_it(sizes[ipth]))
             else: run(ipth, level+1)
+        
+        print('─'*113)
         run(DIR)
       shell: python
       env:
